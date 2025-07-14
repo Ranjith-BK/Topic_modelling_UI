@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Brain } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
@@ -9,6 +10,7 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,9 +24,7 @@ const LoginPage: React.FC = () => {
     setIsLoading(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      // Make API call to authenticate
       const response = await fetch('http://20.92.226.217:8000/auth/login', {
         method: 'POST',
         headers: {
@@ -39,8 +39,23 @@ const LoginPage: React.FC = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('Login successful:', data);
-        // Handle successful login - redirect to home
-        window.location.href = '/home';
+        
+        // Store authentication data
+        const currentTime = new Date().getTime().toString();
+        
+        try {
+          sessionStorage.setItem('authToken', data.token || data.access_token);
+          sessionStorage.setItem('loginTime', currentTime);
+          sessionStorage.setItem('userEmail', email);
+          
+          // Redirect to home page
+          router.push('/home');
+          
+        } catch (storageError) {
+          console.error('Error storing auth data:', storageError);
+          setError('Login successful but failed to store session data');
+        }
+        
       } else {
         const errorData = await response.json();
         setError(errorData.detail || 'Login failed');
@@ -49,6 +64,13 @@ const LoginPage: React.FC = () => {
       setError('Error connecting to the server');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Handle Enter key press
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !isLoading) {
+      handleSubmit(e as any); // Type assertion to match FormEvent
     }
   };
 
@@ -100,6 +122,7 @@ const LoginPage: React.FC = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onKeyDown={handleKeyDown}
                   className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300 hover:bg-gray-750"
                   placeholder="Enter your email"
                   required
@@ -120,6 +143,7 @@ const LoginPage: React.FC = () => {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onKeyDown={handleKeyDown}
                   className="w-full pl-10 pr-12 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300 hover:bg-gray-750"
                   placeholder="Enter your password"
                   required
@@ -140,7 +164,7 @@ const LoginPage: React.FC = () => {
 
             {/* Login Button */}
             <button
-              type="submit"
+              type="button"
               onClick={handleSubmit}
               disabled={isLoading}
               className="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-black transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
