@@ -1,6 +1,8 @@
 import React from 'react';
 import { ChevronRight, Brain, Zap, Target, Users, ArrowRight, Star, Quote } from 'lucide-react';
+import {Header} from '@/components/Header/Header';
 import './globals.css';
+
 const HomePage: React.FC = () => {
 
   const services = [
@@ -14,7 +16,7 @@ const HomePage: React.FC = () => {
       title: "Custom AI Development",
       description: "Tailored AI solutions built specifically for your unique business challenges"
     },
-    {
+      {
       icon: <Target className="w-8 h-8" />,
       title: "Topic Modeling & NLP",
       description: "Advanced natural language processing for business communications analysis"
@@ -73,21 +75,7 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* Navigation Bar */}
-      <nav className="fixed top-0 w-full z-50 px-6 py-4 bg-transparent backdrop-blur-sm">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 flex items-center justify-center">
-              <span className="text-white font-bold text-lg">Y</span>
-            </div>
-            <span className="text-white text-xl ml-2 font-semibold">YaaraLabs</span>
-          </div>
-          <div className="flex gap-8">
-            <a href="#solutions" className="text-white hover:text-pink-400 transition-colors">Solutions</a>
-            <a href="#expertise" className="text-white hover:text-pink-400 transition-colors">Our Expertise</a>
-            <a href="#contact" className="text-white hover:text-pink-400 transition-colors">Contact Us</a>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
       {/* Hero Section */}
       <section className="relative z-20 min-h-screen flex items-center justify-center px-4">
